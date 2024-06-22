@@ -4,14 +4,15 @@ services:
     image: gq97a6/bitcoin-visualizer:1.0.0
     restart: unless-stopped
     ports:
-      - 3030:3030
       - 3000:3000
+      - 443:443
     volumes:
-        - ./certs:/app/certs
+        - key.pem:/app/certs/key.pem
+        - cert.pem:/app/certs/cert.pem
     environment:
-      SERVER_PORT: 3030
-      WEB_PORT: 3000
-      ZMQ_URI: tcp://10.0.2.2:28334
-      RPC_URI: http://10.0.2.2:8332
+      SERVER_PORT: 3000
+      WEB_PORT: 443
+      ZMQ_URI: tcp://localhost:28332
+      RPC_URI: http://localhost:8332
       RPC_USERNAME: user
       RPC_PASSWORD: pass

@@ -136,7 +136,6 @@ async function run() {
 // Log environment variables
 console.log("WEB_PORT:", E.WEB_PORT);
 console.log("SERVER_PORT:", E.SERVER_PORT);
-console.log("USE_HTTPS:", E.USE_HTTPS);
 console.log("ZMQ_URI:", E.ZMQ_URI);
 console.log("RPC_URI:", E.RPC_URI);
 console.log("RPC_USERNAME:", E.RPC_USERNAME);
