@@ -1,0 +1,17 @@
+services:
+  bitcoin-visualizer:
+    container_name: bitcoin-visualizer
+    image: gq97a6/bitcoin-visualizer:1.0.0
+    restart: unless-stopped
+    ports:
+      - 3030:3030
+      - 3000:3000
+    volumes:
+        - ./certs:/app/certs
+    environment:
+      SERVER_PORT: 3030
+      WEB_PORT: 3000
+      ZMQ_URI: tcp://10.0.2.2:28334
+      RPC_URI: http://10.0.2.2:8332
+      RPC_USERNAME: user
+      RPC_PASSWORD: pass
