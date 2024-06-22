@@ -54,7 +54,7 @@ services:
       - 443:443
     volumes:
         - key.pem:/app/certs/key.pem
-        - cert.pem:/app/certs/key.pem
+        - cert.pem:/app/certs/cert.pem
     environment:
       SERVER_PORT: 3000
       WEB_PORT: 443
