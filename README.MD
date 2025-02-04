@@ -16,7 +16,7 @@ rpcbind=0.0.0.0
 rpcallowip=0.0.0.0/0
 zmqpubrawblock=tcp://0.0.0.0:28334
 zmqpubrawtx=tcp://0.0.0.0:28334
-
+      
 [main]
 txindex=1
 ```
@@ -24,14 +24,14 @@ txindex=1
 ## Environment variables
 The application requires the following environment variables to be set. Docker image has them set to default values:
 
-| Variable       | Description                                                | Default    | 
-|----------------|------------------------------------------------------------| ---------- |
-| `SERVER_PORT`  | The port on which the WebSocket server will run.           | `433`      |
-| `WEB_PORT`     | The port on which the web application will be accessible.  | `3000`     |
-| `ZMQ_URI`      | The URI for ZeroMQ to listen for raw Bitcoin transactions. | `28332`    |
-| `RPC_URI`      | The URI for the Bitcoin node RPC interface.                | `8332`     |
-| `RPC_USERNAME` | The username for accessing the Bitcoin node RPC.           | `username` |
-| `RPC_PASSWORD` | The password for accessing the Bitcoin node RPC.           | `password` |
+| Variable       | Description                                                | Default                 | 
+|----------------|------------------------------------------------------------| ----------------------- |
+| `WEB_PORT`     | The port on which the web application will be accessible.  | `433`                   |
+| `SERVER_PORT`  | The port on which the WebSocket server will run.           | `3000`                  |
+| `ZMQ_URI`      | The URI for ZeroMQ to listen for raw Bitcoin transactions. | `tcp://localhost:28332` |
+| `RPC_URI`      | The URI for the Bitcoin node RPC interface.                | `http://localhost:8332` |
+| `RPC_USERNAME` | The username for accessing the Bitcoin node RPC.           | `username`              |
+| `RPC_PASSWORD` | The password for accessing the Bitcoin node RPC.           | `password`              |
 
 ## Usage with docker
 
@@ -60,8 +60,8 @@ services:
       WEB_PORT: 443
       ZMQ_URI: tcp://localhost:28332
       RPC_URI: http://localhost:8332
-      RPC_USERNAME: user
-      RPC_PASSWORD: pass
+      RPC_USERNAME: username
+      RPC_PASSWORD: password
 ```
 
 ## Usage with node (Linux)
