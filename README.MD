@@ -71,7 +71,7 @@ services:
 
   bitcoin-visualizer:
     container_name: bitcoin-visualizer
-    image: gq97a6/bitcoin-visualizer:1.0.0
+    image: gq97a6/bitcoin-visualizer:latest
     restart: unless-stopped
     networks:
       - bitcoin-nw
