@@ -1,14 +1,14 @@
 services:
   bitcoin-visualizer:
     container_name: bitcoin-visualizer
-    image: gq97a6/bitcoin-visualizer:1.0.0
+    image: gq97a6/bitcoin-visualizer
     restart: unless-stopped
     ports:
       - 3000:3000
       - 443:443
-    volumes:
-        - key.pem:/app/certs/key.pem
-        - cert.pem:/app/certs/cert.pem
+    #volumes:
+    #    - ./certs/key.pem:/app/certs/key.pem
+    #    - ./certs/cert.pem:/app/certs/cert.pem
     environment:
       SERVER_PORT: 3000
       WEB_PORT: 443

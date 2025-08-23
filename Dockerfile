@@ -1,4 +1,5 @@
 FROM alpine:latest
+
 WORKDIR /app
 
 ENV WEB_PORT=433
@@ -9,10 +10,13 @@ ENV RPC_USERNAME=username
 ENV RPC_PASSWORD=password
 
 COPY index.js ./
-COPY certs ./certs
 COPY docs ./docs
 COPY package*.json ./
 
-RUN apk add --update nodejs npm
+RUN apk add --update nodejs npm openssl
 RUN npm install
-CMD ["node", "index.js"]
+
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+CMD ["./entrypoint.sh"]
