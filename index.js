@@ -6,7 +6,6 @@ const zmq = require("zeromq");
 const bitcoin = require("bitcoinjs-lib");
 const E = process.env;
 
-// Server options for HTTPS
 const serverOptions = {
     key: fs.readFileSync("./certs/key.pem"),
     cert: fs.readFileSync("./certs/cert.pem")
@@ -14,9 +13,20 @@ const serverOptions = {
 
 const sockets = [];
 
-// Create HTTPS server for WebSocket connections
-const httpServer = https.createServer(serverOptions).listen(E.SERVER_PORT);
-const wss = new ws.Server({ server: httpServer });
+// Create Express app
+const app = express();
+app.use(express.static("docs"));
+app.get("/config.js", (req, res) => {
+    res.setHeader("Content-Type", "application/javascript");
+    res.send(`window.SERVER_PORT = ${E.SERVER_PORT}`);
+});
+
+// Single HTTPS server for everything
+const server = https.createServer(serverOptions, app);
+server.listen(E.SERVER_PORT || 443);
+
+// Attach WebSocket server to the same server
+const wss = new ws.Server({ server });
 
 wss.on("connection", (socket) => {
     console.log("NEW_SOCKET");
@@ -30,16 +40,6 @@ wss.on("connection", (socket) => {
         }
     });
 });
-
-// Create Express app to serve static files and config
-const app = express();
-app.use(express.static("docs"));
-app.get("/config.js", (req, res) => {
-    res.setHeader("Content-Type", "application/javascript");
-    res.send(`window.SERVER_PORT = ${E.SERVER_PORT}`);
-});
-
-https.createServer(serverOptions, app).listen(E.WEB_PORT);
 
 // Fetch function to dynamically import node-fetch
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -60,11 +60,13 @@ async function callRpc(method, params = []) {
         }),
     });
 
-    const data = await response.json();
-    if (data.error) {
-        throw new Error(data.error.message);
+    try {
+        const data = await response.json();
+        return data.result;
+    } catch (error) {
+        console.log(error.message);
+        throw error;
     }
-    return data.result;
 }
 
 // Function to get address from output script
@@ -90,11 +92,19 @@ async function decodeTransaction(txHex) {
     // Process inputs
     for (const input of tx.ins) {
         const txid = Buffer.from(input.hash).reverse().toString("hex");
-        const detail = await callRpc("getrawtransaction", [txid, true]);
-        const vin = input.index;
-        const address = detail.vout[vin].scriptPubKey.address;
-        const amount = detail.vout[vin].value;
-        inputs.push({ address, amount });
+        try {
+            const detail = await callRpc("getrawtransaction", [txid, true]);
+            if (detail) {
+                const vin = input.index;
+                const address = detail.vout[vin].scriptPubKey.address;
+                const amount = detail.vout[vin].value;
+                inputs.push({ address, amount });
+            } else {
+                inputs.push({ address: "FAKE_" + Math.random() * 9999999999, amount: 0 });
+            }
+        } catch (error) {
+            console.error('Error parsing RPC response:', error);
+        }
     }
 
     // Process outputs
@@ -110,6 +120,7 @@ async function decodeTransaction(txHex) {
 }
 
 // Function to run ZMQ subscriber
+var rawtxCounter = 0;
 async function run() {
     const sock = new zmq.Subscriber();
     sock.connect(E.ZMQ_URI);
@@ -119,6 +130,10 @@ async function run() {
         const topic = filter.toString();
 
         if (topic === "rawtx") {
+            rawtxCounter++
+            console.log(rawtxCounter)
+            if (rawtxCounter >= 1000) rawtxCounter = 0;
+
             const txHex = message.toString("hex");
             decodeTransaction(txHex).then(txInfo => {
                 if (txInfo != null) {
@@ -134,7 +149,6 @@ async function run() {
 }
 
 // Log environment variables
-console.log("WEB_PORT:", E.WEB_PORT);
 console.log("SERVER_PORT:", E.SERVER_PORT);
 console.log("ZMQ_URI:", E.ZMQ_URI);
 console.log("RPC_URI:", E.RPC_URI);
