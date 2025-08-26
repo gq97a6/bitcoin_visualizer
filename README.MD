@@ -4,6 +4,21 @@ This project is a web application that visualizes real-time Bitcoin transactions
 
 Licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
+> [!NOTE]
+> Available at: https://bitcoin.hostunit.net/
+
+## Nodes colors
+- Orange nodes represent null transaction inputs (in case if `getrawtransaction` has failed)
+- Red nodes represent transaction inputs
+- Green nodes represent transaction outputs
+- White nodes represent the transaction
+
+## Functions
+- Double click on a input/output to open address details page in new tab (blockchain.com)
+- Double click on a transaction to open it's details page in new tab (blockchain.com)
+- Click on a input/output to copy it's address
+- Click on a transaction to copy it's hash ID
+
 ## Setup
 
 To run this project you need to have either docker and compose or node installed on your machine. Application requires a Bitcoin node with RPC and ZMQ enabled.
@@ -37,8 +52,7 @@ The application requires the following environment variables to be set. Docker i
 
 | Variable       | Description                                                | Default                 |
 |----------------|------------------------------------------------------------|-------------------------|
-| `WEB_PORT`     | The port on which the web application will be accessible.  | `433`                   |
-| `SERVER_PORT`  | The port on which the WebSocket server will run.           | `3000`                  |
+| `SERVER_PORT`  | The port on which the WebSocket and HTTPS server will run. | `443`                   |
 | `ZMQ_URI`      | The URI for ZeroMQ to listen for raw Bitcoin transactions. | `tcp://localhost:28332` |
 | `RPC_URI`      | The URI for the Bitcoin node RPC interface.                | `http://localhost:8332` |
 | `RPC_USERNAME` | The username for accessing the Bitcoin node RPC.           | `username`              |
@@ -76,9 +90,8 @@ services:
     networks:
       - bitcoin-nw
     ports:
-      - 3000:3000
       - 443:443
-    # Optionaly remove volumes section to use included self-signed certificate
+    # Optionaly remove volumes section to generate new certificate at boot
     volumes:
         - ./key.pem:/app/certs/key.pem
         - ./cert.pem:/app/certs/cert.pem
@@ -97,4 +110,4 @@ services:
 2. Clone this repository
 3. Run `npm install`
 4. Optionaly swap included self-signed certificate located in `./certs` for your own
-5. Run (supply your own variables) `SERVER_PORT=3000 WEB_PORT=443 ZMQ_URI=tcp://localhost:28332 RPC_URI=http://localhost:8332 RPC_USERNAME=username RPC_PASSWORD=password node index.js`
+5. Run (supply your own variables) `SERVER_PORT=443 ZMQ_URI=tcp://localhost:28332 RPC_URI=http://localhost:8332 RPC_USERNAME=username RPC_PASSWORD=password node index.js`

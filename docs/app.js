@@ -76,7 +76,17 @@ function main() {
         //console.log('Mouse left node: ' + node.id);
     }).dblClick((node) => {
         //console.log('Double click on node: ' + node.id);
-        window.open('https://www.blockchain.com/explorer/transactions/btc/' + node.id, '_blank');
+        switch (node.data.type) {
+            case 'tx':
+                window.open('https://www.blockchain.com/explorer/transactions/btc/' + node.id, '_blank');
+                break;
+            case 'out':
+                window.open('https://www.blockchain.com/explorer/addresses/btc/' + node.id, '_blank');
+                break;
+            case 'in':
+                window.open('https://www.blockchain.com/explorer/addresses/btc/' + node.id, '_blank');
+                break;
+        }
     }).click((node) => {
         navigator.clipboard.writeText(node.id);
     });
