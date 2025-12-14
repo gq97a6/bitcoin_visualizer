@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "axios": "1.11.0",
+    "axios": "^1.13.2",
     "bitcoin-core": "5.0.0",
     "bitcoind-rpc": "0.9.1",
     "bitcoinjs-lib": "6.1.7",

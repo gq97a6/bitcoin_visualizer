@@ -5,7 +5,7 @@ This project is a web application that visualizes real-time Bitcoin transactions
 Licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 > [!NOTE]
-> Available at: https://bitcoin.hostunit.net/
+> Available at: https://bitcoin.labcluster.org/
 
 ## Nodes colors
 - Orange nodes represent null transaction inputs (in case if `getrawtransaction` has failed)
@@ -50,13 +50,14 @@ prune=20000
 ## Environment variables
 The application requires the following environment variables to be set. Docker image has them set to default values:
 
-| Variable       | Description                                                | Default                 |
-|----------------|------------------------------------------------------------|-------------------------|
-| `SERVER_PORT`  | The port on which the WebSocket and HTTPS server will run. | `443`                   |
-| `ZMQ_URI`      | The URI for ZeroMQ to listen for raw Bitcoin transactions. | `tcp://localhost:28332` |
-| `RPC_URI`      | The URI for the Bitcoin node RPC interface.                | `http://localhost:8332` |
-| `RPC_USERNAME` | The username for accessing the Bitcoin node RPC.           | `username`              |
-| `RPC_PASSWORD` | The password for accessing the Bitcoin node RPC.           | `password`              |
+| Variable               | Description                                                            | Default                 |
+|------------------------|------------------------------------------------------------------------|-------------------------|
+| `EXTERNAL_SERVER_PORT` | The port on which the WebSocket and HTTP server will run.              | `80`                    |
+| `INTERNAL_SERVER_PORT` | The port fronted will expect secure WebSocket server to be accessible. | `443`                   |
+| `ZMQ_URI`              | The URI for ZeroMQ to listen for raw Bitcoin transactions.             | `tcp://localhost:28332` |
+| `RPC_URI`              | The URI for the Bitcoin node RPC interface.                            | `http://localhost:8332` |
+| `RPC_USERNAME`         | The username for accessing the Bitcoin node RPC.                       | `username`              |
+| `RPC_PASSWORD`         | The password for accessing the Bitcoin node RPC.                       | `password`              |
 
 ## Usage with docker
 
@@ -89,25 +90,11 @@ services:
     restart: unless-stopped
     networks:
       - bitcoin-nw
-    ports:
-      - 443:443
-    # Optionaly remove volumes section to generate new certificate at boot
-    volumes:
-        - ./key.pem:/app/certs/key.pem
-        - ./cert.pem:/app/certs/cert.pem
     environment:
-      SERVER_PORT: 3000
-      WEB_PORT: 443
+      INTERNAL_SERVER_PORT: 80
+      EXTERNAL_SERVER_PORT: 443
       ZMQ_URI: tcp://bitcoin-core:28332
       RPC_URI: http://bitcoin-core:8332
       RPC_USERNAME: username
       RPC_PASSWORD: password
 ```
-
-## Usage with node (Linux)
-
-1. Ensure your Bitcoin node is running with the appropriate configuration
-2. Clone this repository
-3. Run `npm install`
-4. Optionaly swap included self-signed certificate located in `./certs` for your own
-5. Run (supply your own variables) `SERVER_PORT=443 ZMQ_URI=tcp://localhost:28332 RPC_URI=http://localhost:8332 RPC_USERNAME=username RPC_PASSWORD=password node index.js`

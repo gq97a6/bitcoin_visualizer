@@ -2,21 +2,19 @@ FROM alpine:latest
 
 WORKDIR /app
 
-ENV SERVER_PORT=443
+ENV EXTERNAL_SERVER_PORT=443
+ENV INTERNAL_SERVER_PORT=80
 ENV ZMQ_URI=tcp://localhost:28332
 ENV RPC_URI=http://localhost:8332
 ENV RPC_USERNAME=username
-ENV RPC_PASSWORD=password
+ENV RPC_PASSWORD=changeme
 
-COPY index.js ./
-COPY docs ./docs
-COPY package*.json ./
+COPY src/index.js ./
+COPY src/docs ./docs
+COPY src/package*.json ./
 
 RUN apk add --update nodejs npm openssl
 RUN apk add --no-cache python3 make g++
 RUN npm install
 
-COPY entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
-
-CMD ["./entrypoint.sh"]
+CMD ["node", "index.js"]

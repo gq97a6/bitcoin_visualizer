@@ -1,15 +1,9 @@
-const fs = require("fs");
-const https = require("https");
+const http = require("http");
 const ws = require("ws");
 const express = require("express");
 const zmq = require("zeromq");
 const bitcoin = require("bitcoinjs-lib");
 const E = process.env;
-
-const serverOptions = {
-    key: fs.readFileSync("./certs/key.pem"),
-    cert: fs.readFileSync("./certs/cert.pem")
-};
 
 const sockets = [];
 
@@ -18,17 +12,17 @@ const app = express();
 app.use(express.static("docs"));
 app.get("/config.js", (req, res) => {
     res.setHeader("Content-Type", "application/javascript");
-    res.send(`window.SERVER_PORT = ${E.SERVER_PORT}`);
+    res.send(`window.SERVER_PORT = ${E.EXTERNAL_SERVER_PORT}`);
 });
 
-// Single HTTPS server for everything
-const server = https.createServer(serverOptions, app);
-server.listen(E.SERVER_PORT || 443);
+// Single HTTP server
+const server = http.createServer(app);
+server.listen(E.INTERNAL_SERVER_PORT);
 
 // Attach WebSocket server to the same server
-const wss = new ws.Server({ server });
+const wsSever = new ws.Server({ server });
 
-wss.on("connection", (socket) => {
+wsSever.on("connection", (socket) => {
     console.log("NEW_SOCKET");
     sockets.push(socket);
 
@@ -149,7 +143,8 @@ async function run() {
 }
 
 // Log environment variables
-console.log("SERVER_PORT:", E.SERVER_PORT);
+console.log("INTERNAL_SERVER_PORT:", E.INTERNAL_SERVER_PORT);
+console.log("EXTERNAL_SERVER_PORT:", E.EXTERNAL_SERVER_PORT);
 console.log("ZMQ_URI:", E.ZMQ_URI);
 console.log("RPC_URI:", E.RPC_URI);
 console.log("RPC_USERNAME:", E.RPC_USERNAME);
