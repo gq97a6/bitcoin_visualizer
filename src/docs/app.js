@@ -11,19 +11,19 @@ ws.onmessage = function (event) {
             visualizeTransaction(txInfo);
         }
     } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        console.error("Error parsing WebSocket message:", error);
     }
 };
 
-document.addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
         enabled = !enabled;
         alert(enabled ? "Enabled" : "Disabled");
     }
 });
 
 function visualizeTransaction(txInfo) {
-    graph.addNode(txInfo.txid, { type: 'tx' });
+    graph.addNode(txInfo.txid, { type: "tx" });
 
     addInputNodes(txInfo.inputs, txInfo.txid);
     addOutputNodes(txInfo.outputs, txInfo.txid);
@@ -31,15 +31,15 @@ function visualizeTransaction(txInfo) {
 
 function addInputNodes(inputs, txid) {
     inputs.forEach(input => {
-        if (input.amount == 0) graph.addNode(input.address, { type: 'fake_in', amount: input.amount });
-        else graph.addNode(input.address, { type: 'in', amount: input.amount });
+        if (input.amount == 0) graph.addNode(input.address, { type: "fake_in", amount: input.amount });
+        else graph.addNode(input.address, { type: "in", amount: input.amount });
         graph.addLink(input.address, txid);
     });
 }
 
 function addOutputNodes(outputs, txid) {
     outputs.forEach(output => {
-        graph.addNode(output.address, { type: 'out', amount: output.amount });
+        graph.addNode(output.address, { type: "out", amount: output.amount });
         graph.addLink(output.address, txid);
     });
 }
@@ -52,16 +52,16 @@ function main() {
         let color = 0xFF0000FF; // Default color (blue)
 
         switch (node.data.type) {
-            case 'tx':
+            case "tx":
                 color = 0xFFFFFFFF; // White
                 break;
-            case 'out':
+            case "out":
                 color = 0x00FF00FF; // Green
                 break;
-            case 'in':
+            case "in":
                 color = 0xFF0000FF; // Red
                 break;
-            case 'fake_in':
+            case "fake_in":
                 color = 0xff6200FF; // Red
                 break;
         }
@@ -71,20 +71,20 @@ function main() {
 
     const events = Viva.Graph.webglInputEvents(graphics, Viva.Graph.graph());
     events.mouseEnter((node) => {
-        //console.log('Mouse entered node: ' + node.id);
+        //console.log("Mouse entered node: " + node.id);
     }).mouseLeave((node) => {
-        //console.log('Mouse left node: ' + node.id);
+        //console.log("Mouse left node: " + node.id);
     }).dblClick((node) => {
-        //console.log('Double click on node: ' + node.id);
+        //console.log("Double click on node: " + node.id);
         switch (node.data.type) {
-            case 'tx':
-                window.open('https://www.blockchain.com/explorer/transactions/btc/' + node.id, '_blank');
+            case "tx":
+                window.open("https://www.blockchain.com/explorer/transactions/btc/" + node.id, "_blank");
                 break;
-            case 'out':
-                window.open('https://www.blockchain.com/explorer/addresses/btc/' + node.id, '_blank');
+            case "out":
+                window.open("https://www.blockchain.com/explorer/addresses/btc/" + node.id, "_blank");
                 break;
-            case 'in':
-                window.open('https://www.blockchain.com/explorer/addresses/btc/' + node.id, '_blank');
+            case "in":
+                window.open("https://www.blockchain.com/explorer/addresses/btc/" + node.id, "_blank");
                 break;
         }
     }).click((node) => {

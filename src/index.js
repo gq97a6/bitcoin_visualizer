@@ -20,9 +20,9 @@ const server = http.createServer(app);
 server.listen(E.INTERNAL_SERVER_PORT);
 
 // Attach WebSocket server to the same server
-const wsSever = new ws.Server({ server });
+const wsServer = new ws.Server({ server });
 
-wsSever.on("connection", (socket) => {
+wsServer.on("connection", (socket) => {
     console.log("NEW_SOCKET");
     sockets.push(socket);
 
@@ -97,7 +97,7 @@ async function decodeTransaction(txHex) {
                 inputs.push({ address: "FAKE_" + Math.random() * 9999999999, amount: 0 });
             }
         } catch (error) {
-            console.error('Error parsing RPC response:', error);
+            console.error("Error parsing RPC response:", error);
         }
     }
 
@@ -114,7 +114,7 @@ async function decodeTransaction(txHex) {
 }
 
 // Function to run ZMQ subscriber
-var rawtxCounter = 0;
+let rawtxCounter = 0;
 async function run() {
     const sock = new zmq.Subscriber();
     sock.connect(E.ZMQ_URI);
@@ -124,8 +124,8 @@ async function run() {
         const topic = filter.toString();
 
         if (topic === "rawtx") {
-            rawtxCounter++
-            console.log(rawtxCounter)
+            rawtxCounter++;
+            console.log(rawtxCounter);
             if (rawtxCounter >= 1000) rawtxCounter = 0;
 
             const txHex = message.toString("hex");
@@ -136,7 +136,7 @@ async function run() {
                     }
                 }
             }).catch(error => {
-                console.error('Error decoding transaction:', error);
+                console.error("Error decoding transaction:", error);
             });
         }
     }
